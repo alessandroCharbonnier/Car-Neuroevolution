@@ -9,7 +9,7 @@ class Car {
         this.power = 0.3;
         this.turnSpeed = 0.005;
         this.angle = angle;
-        this.minSpeed = 0.1;
+        this.minSpeed = 0.5;
         this.h = 12;
         this.w = 20;
         this.numEyes = PI / 6;
@@ -27,12 +27,12 @@ class Car {
             }
         })();
 
-        this.score = 0;
+        this.score = 1;
         this.fitness = 0;
         if (brain) {
             this.brain = brain.copy();
         } else {
-            this.brain = new NeuralNetwork(7, 7, 5, 3);
+            this.brain = new NeuralNetwork(7, 10, 3, 3);
         }
         this.alive = true;
     }
@@ -46,7 +46,7 @@ class Car {
     }
 
     isDead() {
-        if (this.stoppedFrame > 30) {
+        if (this.stoppedFrame > 15) {
             this.alive = false;
         }
         if (!this.alive) {
@@ -82,7 +82,7 @@ class Car {
     }
 
     turn(direction) {
-        if (this.vel.x >= this.minSpeed && this.vel.x <= -this.minSpeed && this.vel.y >= this.minSpeed && this.vel.y <= -this.minSpeed) {
+        if (!(this.vel.x <= this.minSpeed && this.vel.x >= -this.minSpeed && this.vel.y <= this.minSpeed && this.vel.y >= -this.minSpeed)) {
             if (direction === "right") {
                 this.angularVel += this.turnSpeed;
             } else if (direction === "left") {
@@ -94,7 +94,7 @@ class Car {
     accelerate() {
         this.vel.x += cos(this.angle) * this.power;
         this.vel.y += sin(this.angle) * this.power;
-        this.score++;
+        this.score *= 2;
     }
 
     break() {
@@ -104,14 +104,13 @@ class Car {
 
     update() {
         const decision = this.think();
-
         if (decision[0] > 0.5) {
             this.accelerate();
         }
-        if (decision[1] > 0.3) {
+        if (decision[1] > 0.5) {
             this.turn("right");
         }
-        if (decision[2] > 0.3) {
+        if (decision[2] > 0.5) {
             this.turn("left");
         }
 
@@ -122,7 +121,7 @@ class Car {
         this.pos.add(this.vel);
 
         if (this.vel.x <= this.minSpeed && this.vel.x >= -this.minSpeed && this.vel.y <= this.minSpeed && this.vel.y >= -this.minSpeed) {
-            this.stoppedFrame += 5;
+            this.stoppedFrame++;
         }
 
         this.updateEyes();

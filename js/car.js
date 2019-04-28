@@ -2,13 +2,14 @@ class Car {
     constructor(x, y, angle, brain) {
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
+        this.stoppedFrame = 0;
         this.drag = 0.9;
         this.angularVel = 0;
         this.angularDrag = 0.95;
         this.power = 0.3;
         this.turnSpeed = 0.005;
         this.angle = angle;
-        this.minSpeed = 1;
+        this.minSpeed = 0.1;
         this.h = 12;
         this.w = 20;
         this.numEyes = PI / 6;
@@ -31,7 +32,7 @@ class Car {
         if (brain) {
             this.brain = brain.copy();
         } else {
-            this.brain = new NeuralNetwork(7, 10, 4, 3);
+            this.brain = new NeuralNetwork(7, 10, 2, 3);
         }
         this.alive = true;
     }
@@ -45,9 +46,13 @@ class Car {
     }
 
     isDead() {
-        if (!this.alive) {
-            return false;
+        if (this.stoppedFrame > 60) {
+            this.alive = false;
         }
+        if (!this.alive) {
+            return true;
+        }
+
         for (const e of this.eyes) {
             if (e.dist <= 5) {
                 this.alive = false;
@@ -77,7 +82,7 @@ class Car {
     }
 
     turn(direction) {
-        if (!(this.vel.x <= this.minSpeed && this.vel.x >= -this.minSpeed && this.vel.y <= this.minSpeed && this.vel.y >= -this.minSpeed)) {
+        if (this.vel.x >= this.minSpeed && this.vel.x <= -this.minSpeed && this.vel.y >= this.minSpeed && this.vel.y <= -this.minSpeed) {
             if (direction === "right") {
                 this.angularVel += this.turnSpeed;
             } else if (direction === "left") {
@@ -110,19 +115,19 @@ class Car {
             this.turn("left");
         }
 
-        this.pos.add(this.vel);
-        this.vel.mult(this.drag);
-
         this.angularVel *= this.angularDrag;
         this.angle += this.angularVel;
 
+        this.vel.mult(this.drag);
+        this.pos.add(this.vel);
+
+        if (this.vel.x <= this.minSpeed && this.vel.x >= -this.minSpeed && this.vel.y <= this.minSpeed && this.vel.y >= -this.minSpeed) {
+            this.stoppedFrame++;
+        }
+
         this.updateEyes();
         for (const i in this.eyes) {
-            for (const l of lines) {
-                if (this.eyes[i].intersecting(l.x1, l.y1, l.x2, l.y2)) {
-                    break;
-                }
-            }
+            this.eyes[i].intersecting();
         }
     }
 

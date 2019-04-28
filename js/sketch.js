@@ -1,32 +1,39 @@
 let cars = [];
-
-function preload() {
-    bg = loadImage("../images/resizeimg.jpg");
-}
+let savedCars = [];
+const TOTAL = 50;
+let tx = -2084.5,
+    ty = -971.5;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
     rectMode(CENTER);
-    cars.push(new Car(2705, 1350, 90.5));
+    for (let i = 0; i < TOTAL; i++) cars.push(new Car(2705, 1350, 90.5));
 }
 
 function draw() {
     // image(bg, 0, 0, bg.width, bg.height);
     background(0);
+    const bestCar = findBest();
+    tx = lerp(tx, width * 0.5 - bestCar.pos.x, 0.05);
+    ty = lerp(ty, height * 0.5 - bestCar.pos.y, 0.05);
+    translate(tx, ty);
 
-    translate(width * 0.5 - cars[0].pos.x, height * 0.5 - cars[0].pos.y);
+    if (cars.length === 0) {
+        nextGeneration();
+    }
 
-    for (const car of cars) {
-        if (car.alive) {
-            car.update();
-            car.isDead();
-            car.show();
+    let oneAlive = false;
+    for (const i in cars) {
+        if (cars[i].isDead()) {
+            savedCars.push(cars.splice(i, 1)[0]);
+        } else {
+            oneAlive = true;
         }
     }
 
-    try {
-        line(l.x1, l.y1, mouseX, mouseY);
-    } catch (error) {}
+    if (!oneAlive) {
+        nextGeneration();
+    }
 
     noFill();
     stroke(255);
@@ -34,6 +41,29 @@ function draw() {
     for (const l of lines) {
         line(l.x1, l.y1, l.x2, l.y2);
     }
+
+    for (const car of cars) {
+        if (car.alive) {
+            car.update();
+        }
+        car.show();
+    }
+
+    // try {
+    //     line(l.x1, l.y1, mouseX, mouseY);
+    // } catch (error) {}
+}
+
+function findBest() {
+    let bestScore = -1;
+    let bestCar;
+    for (const c of cars) {
+        if (c.score > bestScore) {
+            bestScore = c.score;
+            bestCar = c;
+        }
+    }
+    return bestCar;
 }
 
 // function mousePressed() {
@@ -53,8 +83,16 @@ function draw() {
 //      click++
 // }
 
-// function keyPressed() {
-//     if (key === " ") {
-//         console.log(JSON.stringify(lines));
-//     }
-// }
+function keyPressed() {
+    if (key === " ") {
+        for (const car of cars) {
+            savedCars.push(car);
+        }
+        cars = [];
+        nextGeneration();
+    }
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}

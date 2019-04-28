@@ -1,5 +1,5 @@
 class Car {
-    constructor(x, y, angle) {
+    constructor(x, y, angle, brain) {
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
         this.drag = 0.9;
@@ -13,12 +13,43 @@ class Car {
         this.w = 20;
         this.numEyes = PI / 6;
         this.eyes = [];
+        this.r = random(255);
+        this.g = random(255);
+        this.b = random(255);
+        (() => {
+            for (let i = -HALF_PI; i <= HALF_PI; i += this.numEyes) {
+                const x = this.pos.x,
+                    y = this.pos.y,
+                    angle = this.angle + i,
+                    len = 75;
+                this.eyes.push(new Eye(x, y, angle, len));
+            }
+        })();
+
+        this.score = 0;
+        this.fitness = 0;
+        if (brain) {
+            this.brain = brain.copy();
+        } else {
+            this.brain = new NeuralNetwork(7, 10, 4, 3);
+        }
         this.alive = true;
     }
 
+    dispose() {
+        this.brain.dispose();
+    }
+
+    mutate() {
+        this.brain.mutate(0.1);
+    }
+
     isDead() {
+        if (!this.alive) {
+            return false;
+        }
         for (const e of this.eyes) {
-            if (dist(e.ipx, e.ipy, this.pos.x, this.pos.y) <= 5) {
+            if (e.dist <= 5) {
                 this.alive = false;
                 return true;
             }
@@ -37,6 +68,14 @@ class Car {
         }
     }
 
+    think() {
+        let inputs = [];
+        for (const e of this.eyes) {
+            inputs.push(map(e.dist, 5, 75, -1, 1));
+        }
+        return this.brain.predict(inputs);
+    }
+
     turn(direction) {
         if (!(this.vel.x <= this.minSpeed && this.vel.x >= -this.minSpeed && this.vel.y <= this.minSpeed && this.vel.y >= -this.minSpeed)) {
             if (direction === "right") {
@@ -50,6 +89,7 @@ class Car {
     accelerate() {
         this.vel.x += cos(this.angle) * this.power;
         this.vel.y += sin(this.angle) * this.power;
+        this.score++;
     }
 
     break() {
@@ -58,18 +98,16 @@ class Car {
     }
 
     update() {
-        if (keyIsDown(68)) {
-            this.turn("right");
-        }
-        if (keyIsDown(81)) {
-            this.turn("left");
-        }
+        const decision = this.think();
 
-        if (keyIsDown(90)) {
+        if (decision[0] > 0.5) {
             this.accelerate();
         }
-        if (keyIsDown(83)) {
-            this.break();
+        if (decision[1] > 0.5) {
+            this.turn("right");
+        }
+        if (decision[2] > 0.5) {
+            this.turn("left");
         }
 
         this.pos.add(this.vel);
@@ -89,16 +127,15 @@ class Car {
     }
 
     show() {
+        for (const eye of this.eyes) {
+            eye.show();
+        }
         noStroke();
-        fill(255, 0, 0);
+        fill(this.r, this.g, this.b);
         push();
         translate(this.pos.x, this.pos.y);
         rotate(this.angle);
         rect(0, 0, this.w, this.h);
         pop();
-
-        for (const eye of this.eyes) {
-            eye.show();
-        }
     }
 }

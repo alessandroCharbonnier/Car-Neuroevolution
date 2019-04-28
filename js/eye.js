@@ -8,19 +8,25 @@ class Eye {
         this.ipx;
         this.ipy;
 
+        this.dist = 75;
+
         this.alpha = 75;
     }
 
     show() {
         noFill();
+        this.dist = dist(this.ipx, this.ipy, this.x1, this.y1);
+
         stroke(255, this.alpha);
-        line(this.x1, this.y1, this.x2, this.y2);
+        line(this.x1, this.y1, this.ipx, this.ipy);
         this.drawCross(this.ipx, this.ipy, 15);
     }
 
     drawCross(x, y, w) {
         noStroke();
-        fill(255, 0, 0);
+        let r = map(this.dist, 5, 75, 255, 0);
+        let g = map(this.dist, 5, 75, 0, 255);
+        fill(r, g, 0);
 
         push();
         translate(x, y);
@@ -36,9 +42,9 @@ class Eye {
         let x3 = this.x1,
             y3 = this.y1,
             x4 = this.x2,
-            y4 = this.y2;
-        var uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
-        var uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
+            y4 = this.y2,
+            uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)),
+            uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
 
         if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
             this.ipx = x1 + uA * (x2 - x1);
@@ -49,7 +55,5 @@ class Eye {
             this.ipy = this.y2;
             return false;
         }
-        // this.ipx = this.x2; // (b2 * c1 - b1 * c2) / delta;
-        // this.ipy = this.y2; //(a1 * c2 - a2 * c1) / delta;
     }
 }

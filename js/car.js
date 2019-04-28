@@ -12,17 +12,19 @@ class Car {
         this.minSpeed = 0.5;
         this.h = 12;
         this.w = 20;
-        this.numEyes = PI / 8;
+        this.n = 12;
+        this.numEyes = PI / this.n;
         this.eyes = [];
         this.r = random(255);
         this.g = random(255);
         this.b = random(255);
+        this.eyesLen = 175;
         (() => {
             for (let i = -HALF_PI; i <= HALF_PI; i += this.numEyes) {
                 const x = this.pos.x,
                     y = this.pos.y,
                     angle = this.angle + i,
-                    len = 75;
+                    len = this.eyesLen;
                 this.eyes.push(new Eye(x, y, angle, len));
             }
         })();
@@ -32,7 +34,7 @@ class Car {
         if (brain) {
             this.brain = brain.copy();
         } else {
-            this.brain = new NeuralNetwork(9, 10, 4, 4);
+            this.brain = new NeuralNetwork(this.n + 1, 14, 8, 4);
         }
         this.alive = true;
     }
@@ -68,7 +70,7 @@ class Car {
             const x = this.pos.x,
                 y = this.pos.y,
                 angle = this.angle + i,
-                len = 75;
+                len = this.eyesLen;
             this.eyes.push(new Eye(x, y, angle, len));
         }
     }
@@ -76,7 +78,7 @@ class Car {
     think() {
         let inputs = [];
         for (const e of this.eyes) {
-            inputs.push(map(e.dist, 5, 75, -1, 1));
+            inputs.push(map(e.dist, 5, this.eyesLen, -1, 1));
         }
         return this.brain.predict(inputs);
     }

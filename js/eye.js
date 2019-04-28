@@ -5,10 +5,12 @@ class Eye {
         this.x2 = this.x1 + cos(angle) * len;
         this.y2 = this.y1 + sin(angle) * len;
 
+        this.len = len;
+
         this.ipx = this.x2;
         this.ipy = this.y2;
 
-        this.dist = 75;
+        this.dist = this.len;
 
         this.alpha = 75;
     }
@@ -24,8 +26,8 @@ class Eye {
 
     drawCross(x, y, w) {
         noStroke();
-        let r = map(this.dist, 5, 75, 255, 0);
-        let g = map(this.dist, 5, 75, 0, 255);
+        let r = map(this.dist, 5, this.len, 255, 0);
+        let g = map(this.dist, 5, this.len, 0, 255);
         fill(r, g, 0);
 
         push();

@@ -12,7 +12,7 @@ class Car {
         this.minSpeed = 0.5;
         this.h = 12;
         this.w = 20;
-        this.numEyes = PI / 6;
+        this.numEyes = PI / 8;
         this.eyes = [];
         this.r = random(255);
         this.g = random(255);
@@ -32,7 +32,7 @@ class Car {
         if (brain) {
             this.brain = brain.copy();
         } else {
-            this.brain = new NeuralNetwork(7, 10, 3, 3);
+            this.brain = new NeuralNetwork(9, 10, 4, 4);
         }
         this.alive = true;
     }
@@ -46,7 +46,7 @@ class Car {
     }
 
     isDead() {
-        if (this.stoppedFrame > 15) {
+        if (this.stoppedFrame > 30) {
             this.alive = false;
         }
         if (!this.alive) {
@@ -98,8 +98,8 @@ class Car {
     }
 
     break() {
-        this.vel.x -= cos(this.angle) * this.power * 0.5;
-        this.vel.y -= sin(this.angle) * this.power * 0.5;
+        this.vel.x -= cos(this.angle) * this.power;
+        this.vel.y -= sin(this.angle) * this.power;
     }
 
     update() {
@@ -108,9 +108,12 @@ class Car {
             this.accelerate();
         }
         if (decision[1] > 0.5) {
-            this.turn("right");
+            this.break();
         }
         if (decision[2] > 0.5) {
+            this.turn("right");
+        }
+        if (decision[3] > 0.5) {
             this.turn("left");
         }
 
@@ -127,7 +130,7 @@ class Car {
         this.updateEyes();
         for (const i in this.eyes) {
             for (const l of lines) {
-                if (this.eyes[i].intersecting(l.x1, l.y1, l.x2, l.y2)) break;
+                this.eyes[i].intersecting();
             }
         }
     }

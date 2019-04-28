@@ -38,22 +38,45 @@ class Eye {
         pop();
     }
 
-    intersecting(x1, y1, x2, y2) {
-        const x3 = this.x1,
-            y3 = this.y1,
-            x4 = this.x2,
-            y4 = this.y2,
-            uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)),
-            uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
+    intersecting() {
+        let intersections = [];
+        let test = [];
+        let closest;
+        let minDist = 0;
+        for (const l of lines) {
+            const x1 = l.x1,
+                y1 = l.y1,
+                x2 = l.x2,
+                y2 = l.y2,
+                x3 = this.x1,
+                y3 = this.y1,
+                x4 = this.x2,
+                y4 = this.y2,
+                uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)),
+                uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
 
-        if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-            this.ipx = x1 + uA * (x2 - x1);
-            this.ipy = y1 + uA * (y2 - y1);
-            return true;
+            if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+                intersections.push({
+                    x: x1 + uA * (x2 - x1),
+                    y: y1 + uA * (y2 - y1)
+                });
+            }
+        }
+
+        for (const i of intersections) {
+            const dis = dist(i.x, i.y, this.ipx, this.ipy);
+
+            if (dis > minDist) {
+                minDist = dis;
+                closest = i;
+            }
+        }
+        if (closest) {
+            this.ipx = closest.x;
+            this.ipy = closest.y;
         } else {
             this.ipx = this.x2;
             this.ipy = this.y2;
-            return false;
         }
     }
 }

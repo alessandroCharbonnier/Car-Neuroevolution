@@ -1,6 +1,6 @@
 let cars = [];
 let savedCars = [];
-const TOTAL = 50;
+const TOTAL = 100;
 let tx = -2084.5,
     ty = -971.5;
 let qtree;

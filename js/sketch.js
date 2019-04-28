@@ -24,7 +24,7 @@ function draw() {
     }
 
     let oneAlive = false;
-    for (const i in cars) {
+    for (let i = cars.length - 1; i >= 0; i--) {
         if (cars[i].isDead()) {
             savedCars.push(cars.splice(i, 1)[0]);
         } else {

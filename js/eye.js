@@ -38,42 +38,15 @@ class Eye {
         pop();
     }
 
-    intersecting() {
-        var colliding = qtree.colliding(
-            {
-                x: this.ipx,
-                y: this.ipy
-            },
-            (element1, element2) => {
-                let x1 = element1.x,
-                    y1 = element1.y,
-                    x2 = this.x1,
-                    y2 = this.y1,
-                    x3 = element2.x,
-                    y3 = element2.y,
-                    x4 = element2.x2,
-                    y4 = element2.y2,
-                    uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)),
-                    uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
+    intersecting(x1, y1, x2, y2) {
+        const x3 = this.x1,
+            y3 = this.y1,
+            x4 = this.x2,
+            y4 = this.y2,
+            uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)),
+            uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
 
-                if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        );
-        if (colliding.length > 0) {
-            let x1 = this.x1,
-                y1 = this.y1,
-                x2 = this.x2,
-                y2 = this.y2,
-                x3 = colliding[0].x,
-                y3 = colliding[0].y,
-                x4 = colliding[0].x2,
-                y4 = colliding[0].y2,
-                uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
-
+        if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
             this.ipx = x1 + uA * (x2 - x1);
             this.ipy = y1 + uA * (y2 - y1);
             return true;
@@ -82,14 +55,5 @@ class Eye {
             this.ipy = this.y2;
             return false;
         }
-
-        /*
-        let x3 = this.x1,
-            y3 = this.y1,
-            x4 = this.x2,
-            y4 = this.y2,
-            uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)),
-            uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
-        */
     }
 }

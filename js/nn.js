@@ -39,7 +39,7 @@ class NeuralNetwork {
                 for (let j = 0; j < values.length; j++) {
                     if (random(1) < rate) {
                         let w = values[j];
-                        values[j] = w + randomGaussian();
+                        values[j] = w + random(-1, 1);
                     }
                 }
                 let newTensor = tf.tensor(values, shape);
@@ -83,7 +83,7 @@ class NeuralNetwork {
         model.add(
             tf.layers.dense({
                 units: this.output_nodes,
-                activation: "softmax"
+                activation: "sigmoid"
             })
         );
         return model;

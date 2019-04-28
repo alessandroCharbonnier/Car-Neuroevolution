@@ -126,7 +126,9 @@ class Car {
 
         this.updateEyes();
         for (const i in this.eyes) {
-            this.eyes[i].intersecting();
+            for (const l of lines) {
+                if (this.eyes[i].intersecting(l.x1, l.y1, l.x2, l.y2)) break;
+            }
         }
     }
 

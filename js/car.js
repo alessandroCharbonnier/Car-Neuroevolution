@@ -32,7 +32,7 @@ class Car {
         if (brain) {
             this.brain = brain.copy();
         } else {
-            this.brain = new NeuralNetwork(7, 10, 2, 3);
+            this.brain = new NeuralNetwork(7, 7, 5, 3);
         }
         this.alive = true;
     }
@@ -46,7 +46,7 @@ class Car {
     }
 
     isDead() {
-        if (this.stoppedFrame > 60) {
+        if (this.stoppedFrame > 30) {
             this.alive = false;
         }
         if (!this.alive) {
@@ -108,10 +108,10 @@ class Car {
         if (decision[0] > 0.5) {
             this.accelerate();
         }
-        if (decision[1] > 0.5) {
+        if (decision[1] > 0.3) {
             this.turn("right");
         }
-        if (decision[2] > 0.5) {
+        if (decision[2] > 0.3) {
             this.turn("left");
         }
 
@@ -122,7 +122,7 @@ class Car {
         this.pos.add(this.vel);
 
         if (this.vel.x <= this.minSpeed && this.vel.x >= -this.minSpeed && this.vel.y <= this.minSpeed && this.vel.y >= -this.minSpeed) {
-            this.stoppedFrame++;
+            this.stoppedFrame += 5;
         }
 
         this.updateEyes();

@@ -4,7 +4,7 @@ function nextGeneration() {
     for (let i = 0; i < TOTAL; i++) {
         cars[i] = pickOne();
     }
-    for (let i = 0; i < TOTAL; i++) {
+    for (let i = 0; i < savedCars.length; i++) {
         savedCars[i].dispose();
     }
     savedCars = [];

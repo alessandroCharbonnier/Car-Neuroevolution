@@ -3,6 +3,7 @@ let savedCars = [];
 const TOTAL = 50;
 let tx = -2084.5,
     ty = -971.5;
+let qtree;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -11,7 +12,7 @@ function setup() {
 }
 
 function draw() {
-    // image(bg, 0, 0, bg.width, bg.height);
+    buildQtree();
     background(0);
     const bestCar = findBest();
     tx = lerp(tx, width * 0.5 - bestCar.pos.x, 0.05);
@@ -66,6 +67,24 @@ function findBest() {
     return bestCar;
 }
 
+function buildQtree() {
+    qtree = new Quadtree({
+        width: windowWidth,
+        height: windowHeight,
+        maxElements: 2 //Optional
+    });
+    for (const l of lines) {
+        stroke(0, 255, 0);
+        qtree.push({
+            x: l.x1,
+            y: l.y1,
+            x2: l.x2,
+            y2: l.y2,
+            width: 75,
+            height: 75
+        });
+    }
+}
 // function mousePressed() {
 //     if (click % 2 === 0) {
 //         l = {
